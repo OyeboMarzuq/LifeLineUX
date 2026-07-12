@@ -83,11 +83,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: "LifeLine helps families, hospitals, and communities raise urgent funds for medical care — with verification, transparency, and instant donations." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:site", content: "@LifeLineMedTech" },
       { name: "twitter:title", content: "LifeLine — Trusted medical emergency fundraising" },
       { name: "twitter:description", content: "LifeLine helps families, hospitals, and communities raise urgent funds for medical care — with verification, transparency, and instant donations." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e91048ad-0420-4d46-b9b1-65e528714e94/id-preview-c3eeef37--b6c0205e-ca38-4809-b8c5-4b5decc3f539.lovable.app-1780051277393.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e91048ad-0420-4d46-b9b1-65e528714e94/id-preview-c3eeef37--b6c0205e-ca38-4809-b8c5-4b5decc3f539.lovable.app-1780051277393.png" },
+      { property: "og:image", content: "" },
+      { name: "twitter:image", content: "" },
     ],
     links: [
       {
