@@ -54,7 +54,7 @@ function CampaignDetail() {
               <VerifiedBadge status={c.status} />
               <span className="text-sm text-muted-foreground">by {c.creatorName}</span>
             </div>
-            <h1 className="font-display text-3xl md:text-4xl font-bold">{c.title}</h1>
+            <h1 className="font-display text-3xl md:text-4xl font-bold break-words">{c.title}</h1>
             <p className="text-muted-foreground mt-2">{c.patientName} · {c.medicalCondition}</p>
           </div>
 
@@ -64,7 +64,7 @@ function CampaignDetail() {
 
           <section className="bg-card border border-border rounded-2xl p-6">
             <h2 className="font-semibold text-lg mb-3">Story</h2>
-            <p className="whitespace-pre-line leading-relaxed text-sm text-foreground/90">{c.story}</p>
+            <p className="whitespace-pre-line leading-relaxed text-sm text-foreground/90 break-words">{c.story}</p>
           </section>
 
           <section className="bg-card border border-border rounded-2xl p-6">

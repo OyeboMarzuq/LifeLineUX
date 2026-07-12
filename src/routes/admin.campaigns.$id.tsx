@@ -30,24 +30,28 @@ function Review() {
   });
 
   const verify = useMutation({
-    mutationFn: () => adminApi.verifyCampaign(id),
-    onSuccess: () => {
-      toast.success("Campaign verified.");
-      qc.invalidateQueries({ queryKey: ["admin"] });
-      navigate({ to: "/admin" });
-    },
-    onError: (err) => toast.error(err instanceof ApiError ? err.message : "Failed to verify."),
-  });
+  mutationFn: () => adminApi.verifyCampaign(id),
+  onSuccess: () => {
+    toast.success("Campaign verified.");
+    qc.invalidateQueries({ queryKey: ["admin"] });
+    qc.invalidateQueries({ queryKey: ["campaign"] });
+    qc.invalidateQueries({ queryKey: ["campaigns"] });
+    navigate({ to: "/admin" });
+  },
+  onError: (err) => toast.error(err instanceof ApiError ? err.message : "Failed to verify."),
+});
 
-  const reject = useMutation({
-    mutationFn: () => adminApi.rejectCampaign(id, reason),
-    onSuccess: () => {
-      toast.success("Campaign rejected.");
-      qc.invalidateQueries({ queryKey: ["admin"] });
-      navigate({ to: "/admin" });
-    },
-    onError: (err) => toast.error(err instanceof ApiError ? err.message : "Failed to reject."),
-  });
+const reject = useMutation({
+  mutationFn: () => adminApi.rejectCampaign(id, reason),
+  onSuccess: () => {
+    toast.success("Campaign rejected.");
+    qc.invalidateQueries({ queryKey: ["admin"] });
+    qc.invalidateQueries({ queryKey: ["campaign"] });
+    qc.invalidateQueries({ queryKey: ["campaigns"] });
+    navigate({ to: "/admin" });
+  },
+  onError: (err) => toast.error(err instanceof ApiError ? err.message : "Failed to reject."),
+});
 
   if (isLoading) return <div className="container-page py-12"><Loading /></div>;
   if (error || !c) return <div className="container-page py-12"><ErrorBox message="Campaign not found." retry={refetch} /></div>;
@@ -60,7 +64,7 @@ function Review() {
         <span className="text-sm text-muted-foreground">#{c.id.slice(0, 8)}</span>
         <span className="text-sm text-muted-foreground">Created {fmtDate(c.createdAt)}</span>
       </div>
-      <h1 className="font-display text-3xl font-bold mt-3">{c.title}</h1>
+      <h1 className="font-display text-3xl font-bold mt-3 break-words">{c.title}</h1>
       <p className="text-muted-foreground">{c.patientName} · {c.medicalCondition}</p>
 
       <div className="grid md:grid-cols-3 gap-6 mt-8">
@@ -68,7 +72,7 @@ function Review() {
           {c.coverImageUrl && <img src={c.coverImageUrl} alt="" className="w-full aspect-[16/9] rounded-2xl object-cover border border-border" />}
           <section className="bg-card border border-border rounded-2xl p-6">
             <h2 className="font-semibold mb-3">Story</h2>
-            <p className="text-sm leading-relaxed whitespace-pre-line">{c.story}</p>
+            <p className="text-sm leading-relaxed whitespace-pre-line break-words">{c.story}</p>
           </section>
           <section className="bg-card border border-border rounded-2xl p-6">
             <h2 className="font-semibold mb-3">Medical documents ({c.documents?.length ?? 0})</h2>

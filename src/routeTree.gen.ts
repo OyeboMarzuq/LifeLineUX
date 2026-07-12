@@ -23,6 +23,8 @@ import { Route as CampaignsRouteImport } from './routes/campaigns'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CampaignsIndexRouteImport } from './routes/campaigns.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as DonateCallbackRouteImport } from './routes/donate.callback'
 import { Route as DonateSlugRouteImport } from './routes/donate.$slug'
 import { Route as CampaignsSlugRouteImport } from './routes/campaigns.$slug'
@@ -99,6 +101,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CampaignsIndexRoute = CampaignsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CampaignsRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const DonateCallbackRoute = DonateCallbackRouteImport.update({
   id: '/donate/callback',
   path: '/donate/callback',
@@ -144,13 +156,13 @@ export interface FileRoutesByFullPath {
   '/campaigns/$slug': typeof CampaignsSlugRoute
   '/donate/$slug': typeof DonateSlugRoute
   '/donate/callback': typeof DonateCallbackRoute
+  '/admin/': typeof AdminIndexRoute
+  '/campaigns/': typeof CampaignsIndexRoute
   '/admin/campaigns/$id': typeof AdminCampaignsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRouteWithChildren
-  '/campaigns': typeof CampaignsRouteWithChildren
   '/change-password': typeof ChangePasswordRoute
   '/create': typeof CreateRoute
   '/dashboard': typeof DashboardRoute
@@ -165,6 +177,8 @@ export interface FileRoutesByTo {
   '/campaigns/$slug': typeof CampaignsSlugRoute
   '/donate/$slug': typeof DonateSlugRoute
   '/donate/callback': typeof DonateCallbackRoute
+  '/admin': typeof AdminIndexRoute
+  '/campaigns': typeof CampaignsIndexRoute
   '/admin/campaigns/$id': typeof AdminCampaignsIdRoute
 }
 export interface FileRoutesById {
@@ -187,6 +201,8 @@ export interface FileRoutesById {
   '/campaigns/$slug': typeof CampaignsSlugRoute
   '/donate/$slug': typeof DonateSlugRoute
   '/donate/callback': typeof DonateCallbackRoute
+  '/admin/': typeof AdminIndexRoute
+  '/campaigns/': typeof CampaignsIndexRoute
   '/admin/campaigns/$id': typeof AdminCampaignsIdRoute
 }
 export interface FileRouteTypes {
@@ -210,13 +226,13 @@ export interface FileRouteTypes {
     | '/campaigns/$slug'
     | '/donate/$slug'
     | '/donate/callback'
+    | '/admin/'
+    | '/campaigns/'
     | '/admin/campaigns/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
-    | '/admin'
-    | '/campaigns'
     | '/change-password'
     | '/create'
     | '/dashboard'
@@ -231,6 +247,8 @@ export interface FileRouteTypes {
     | '/campaigns/$slug'
     | '/donate/$slug'
     | '/donate/callback'
+    | '/admin'
+    | '/campaigns'
     | '/admin/campaigns/$id'
   id:
     | '__root__'
@@ -252,6 +270,8 @@ export interface FileRouteTypes {
     | '/campaigns/$slug'
     | '/donate/$slug'
     | '/donate/callback'
+    | '/admin/'
+    | '/campaigns/'
     | '/admin/campaigns/$id'
   fileRoutesById: FileRoutesById
 }
@@ -374,6 +394,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/campaigns/': {
+      id: '/campaigns/'
+      path: '/'
+      fullPath: '/campaigns/'
+      preLoaderRoute: typeof CampaignsIndexRouteImport
+      parentRoute: typeof CampaignsRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/donate/callback': {
       id: '/donate/callback'
       path: '/donate/callback'
@@ -414,11 +448,13 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminUsersRoute: typeof AdminUsersRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   AdminCampaignsIdRoute: typeof AdminCampaignsIdRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminUsersRoute: AdminUsersRoute,
+  AdminIndexRoute: AdminIndexRoute,
   AdminCampaignsIdRoute: AdminCampaignsIdRoute,
 }
 
@@ -426,10 +462,12 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface CampaignsRouteChildren {
   CampaignsSlugRoute: typeof CampaignsSlugRoute
+  CampaignsIndexRoute: typeof CampaignsIndexRoute
 }
 
 const CampaignsRouteChildren: CampaignsRouteChildren = {
   CampaignsSlugRoute: CampaignsSlugRoute,
+  CampaignsIndexRoute: CampaignsIndexRoute,
 }
 
 const CampaignsRouteWithChildren = CampaignsRoute._addFileChildren(
