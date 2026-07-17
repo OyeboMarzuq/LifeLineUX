@@ -4,6 +4,7 @@ import viteReact from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import tsConfigPaths from "vite-tsconfig-paths";
 import { cloudflare } from "@cloudflare/vite-plugin";
+import basicSsl from "@vitejs/plugin-basic-ssl";
 
 export default defineConfig({
   plugins: [
@@ -14,6 +15,7 @@ export default defineConfig({
     }),
     viteReact(),
     cloudflare({ viteEnvironment: { name: "ssr" } }),
+    basicSsl(),
   ],
   resolve: {
     dedupe: ["react", "react-dom", "@tanstack/react-router", "@tanstack/react-start"],

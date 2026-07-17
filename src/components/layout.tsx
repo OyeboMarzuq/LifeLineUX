@@ -88,7 +88,6 @@ export function Header() {
           <Link to="/" className={linkCls} activeProps={{ className: "text-foreground" }}>Home</Link>
           <Link to="/faq" className={linkCls} activeProps={{ className: "text-foreground" }}>FAQ</Link>
           <Link to="/about" className={linkCls} activeProps={{ className: "text-foreground" }}>About</Link>
-          <Link to="/privacy" className={linkCls} activeProps={{ className: "text-foreground" }}>Privacy</Link>
         </nav>
         <div className="flex items-center gap-2">
           <ThemeToggle />
