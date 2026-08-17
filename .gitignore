@@ -30,3 +30,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# mkcert local certificates
+.certs/
+mkcert-v1.4.4-windows-amd64.exe

@@ -1,10 +1,26 @@
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { defineConfig } from "vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import tsConfigPaths from "vite-tsconfig-paths";
 import { cloudflare } from "@cloudflare/vite-plugin";
-import basicSsl from "@vitejs/plugin-basic-ssl";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Look for mkcert-generated certs in .certs/ at the project root
+const keyPath = path.resolve(__dirname, ".certs/localhost-key.pem");
+const certPath = path.resolve(__dirname, ".certs/localhost.pem");
+let httpsConfig: any = false;
+if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+  httpsConfig = {
+    key: fs.readFileSync(keyPath),
+    cert: fs.readFileSync(certPath),
+  };
+}
 
 export default defineConfig({
   plugins: [
@@ -15,15 +31,12 @@ export default defineConfig({
     }),
     viteReact(),
     cloudflare({ viteEnvironment: { name: "ssr" } }),
-    basicSsl(),
   ],
   resolve: {
     dedupe: ["react", "react-dom", "@tanstack/react-router", "@tanstack/react-start"],
   },
-  server: { port: 3000 },
+  server: {
+    port: 3000,
+    https: httpsConfig,
+  },
 });
-
-// --- If you'd rather run on a plain Node server (no Cloudflare): ---
-// Remove the `cloudflare(...)` plugin above and change target to "node-server":
-//   tanstackStart({ target: "node-server", server: { entry: "./src/server.ts" } }),
-// Also delete wrangler.jsonc and the @cloudflare/vite-plugin dependency.
