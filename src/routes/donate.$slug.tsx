@@ -13,7 +13,7 @@ export const Route = createFileRoute("/donate/$slug")({
   head: ({ params }) => ({ meta: [{ title: `Donate · ${params.slug} — LifeLine` }] }),
 });
 
-const PRESETS = [1000, 2500, 5000, 10000, 25000, 50000];
+const PRESETS = [200, 500, 1000, 2500, 5000, 10000, 25000, 50000];
 
 function DonatePage() {
   const { slug } = Route.useParams();
@@ -23,7 +23,7 @@ function DonatePage() {
     queryFn: () => campaignsApi.bySlug(slug),
   });
 
-  const [amount, setAmount] = useState(2500);
+  const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
   const [anon, setAnon] = useState(false);
   const [donorName, setDonorName] = useState("");
@@ -34,7 +34,7 @@ function DonatePage() {
       if (!campaignQ.data) throw new Error("Campaign not loaded");
       return donationsApi.initiate({
         campaignId: campaignQ.data.id,
-        amount,
+        amount: Number(amount),
         isAnonymous: anon,
         message: message || undefined,
         donorName: !user ? donorName : undefined,
@@ -74,8 +74,8 @@ function DonatePage() {
               <button
                 type="button"
                 key={p}
-                onClick={() => setAmount(p)}
-                className={`h-12 rounded-lg border font-semibold transition ${amount === p ? "border-primary bg-primary-soft text-primary" : "border-border bg-background hover:bg-muted"}`}
+                onClick={() => setAmount(String(p))}
+                className={`h-12 rounded-lg border font-semibold transition ${amount === String(p) ? "border-primary bg-primary-soft text-primary" : "border-border bg-background hover:bg-muted"}`}
               >
                 {fmtMoney(p)}
               </button>
@@ -83,12 +83,12 @@ function DonatePage() {
           </div>
           <input
             type="number"
-            min={100}
+            min={200}
             value={amount}
-            onChange={(e) => setAmount(Number(e.target.value))}
+            onChange={(e) => setAmount((e.target.value))}
             className="mt-3 w-full h-12 px-4 rounded-lg bg-background border border-border focus:outline-none focus:ring-2 focus:ring-ring text-lg font-semibold"
           />
-          <p className="text-xs text-muted-foreground mt-1">Minimum ₦100. ₦100 platform fee is split server-side.</p>
+          <p className="text-xs text-muted-foreground mt-1">Minimum ₦200. ₦200 platform fee is split server-side.</p>
         </div>
 
         {!user && (
@@ -122,7 +122,7 @@ function DonatePage() {
         </label>
 
         <div className="bg-surface rounded-xl p-4 text-xs text-muted-foreground flex gap-2">
-          <svg viewBox="0 0 24 24" className="w-4 h-4 text-trust flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          <svg viewBox="0 0 24 24" className="w-4 h-4 text-trust flex-shrink- mt-0.5" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
           You'll be redirected to Paystack for secure checkout.
         </div>
 
@@ -130,7 +130,7 @@ function DonatePage() {
           disabled={initiate.isPending || c.status !== "Verified"}
           className="w-full h-12 rounded-lg bg-primary text-primary-foreground font-semibold shadow-soft hover:opacity-90 transition disabled:opacity-50"
         >
-          {initiate.isPending ? "Starting payment…" : `Donate ${fmtMoney(amount)}`}
+          {initiate.isPending ? "Starting payment…" : `Donate ${fmtMoney(Number(amount))}`}
         </button>
         {c.status !== "Verified" && (
           <p className="text-xs text-warning-foreground text-center">This campaign is awaiting verification and cannot accept donations yet.</p>

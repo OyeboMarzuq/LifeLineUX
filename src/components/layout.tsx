@@ -85,6 +85,7 @@ export function Header() {
       <div className="container-page flex items-center justify-between h-16">
         <Logo />
         <nav className="hidden md:flex items-center gap-7">
+          <Link to="/privacy" className={linkCls} activeProps={{ className: "text-foreground" }}>Privacy</Link>
           <Link to="/" className={linkCls} activeProps={{ className: "text-foreground" }}>Home</Link>
           <Link to="/faq" className={linkCls} activeProps={{ className: "text-foreground" }}>FAQ</Link>
           <Link to="/about" className={linkCls} activeProps={{ className: "text-foreground" }}>About</Link>

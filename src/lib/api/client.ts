@@ -38,6 +38,7 @@ const baseURL =
 export const http: AxiosInstance = axios.create({
   baseURL,
   headers: { "Content-Type": "application/json" },
+  timeout: 30000, // 30 seconds — a stalled request now fails loudly instead of hanging forever
 });
 
 // ────────────────────────── Request: attach bearer ──────────────────────────

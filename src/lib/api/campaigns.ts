@@ -20,21 +20,7 @@ export const campaignsApi = {
   update: (id: string, dto: UpdateCampaignDto) => apiPut<Campaign>(`/campaign/${id}`, dto),
   remove: (id: string) => apiDelete<unknown>(`/campaign/${id}`),
 
-  async uploadCoverImage(id: string, file: File): Promise<string> {
-  const form = new FormData();
-  form.append("file", file);
-  const res = await http.post(`/campaign/${id}/cover-image`, form, {
-    headers: {
-      Authorization: `Bearer ${getAccessToken() ?? ""}`,
-      "Content-Type": undefined,
-    },
-  });
-  const env = res.data as { isSuccess: boolean; data: string | null; message: string | null };
-  if (!env.isSuccess) throw new Error(env.message ?? "Upload failed");
-  return env.data as string;
-},
-
-async uploadDocument(id: string, file: File, fileType: DocumentFileType): Promise<void> {
+  async uploadDocument(id: string, file: File, fileType: DocumentFileType): Promise<void> {
   const form = new FormData();
   form.append("file", file);
   form.append("fileType", fileType);
@@ -43,12 +29,57 @@ async uploadDocument(id: string, file: File, fileType: DocumentFileType): Promis
       Authorization: `Bearer ${getAccessToken() ?? ""}`,
       "Content-Type": undefined,
     },
+    timeout: 120000, // 2 minutes for file uploads
   });
   const env = res.data as { isSuccess: boolean; message: string | null };
   if (!env.isSuccess) throw new Error(env.message ?? "Upload failed");
 },
 
-  postUpdate: (id: string, dto: { title: string; content: string; imageUrl?: string }) =>
-    apiPost<unknown>(`/campaign/${id}/updates`, dto),
-  listUpdates: (id: string) => apiGet<CampaignUpdate[]>(`/campaign/${id}/updates`),
-};
+async uploadCoverImage(id: string, file: File): Promise<string> {
+  const form = new FormData();
+  form.append("file", file);
+  const res = await http.post(`/campaign/${id}/cover-image`, form, {
+    headers: {
+      Authorization: `Bearer ${getAccessToken() ?? ""}`,
+      "Content-Type": undefined,
+    },
+    timeout: 120000, // 2 minutes for file uploads
+  });
+  const env = res.data as { isSuccess: boolean; data: string | null; message: string | null };
+  if (!env.isSuccess) throw new Error(env.message ?? "Upload failed");
+  return env.data as string;
+},
+
+//   async uploadCoverImage(id: string, file: File): Promise<string> {
+//   const form = new FormData();
+//   form.append("file", file);
+//   const res = await http.post(`/campaign/${id}/cover-image`, form, {
+//     headers: {
+//       Authorization: `Bearer ${getAccessToken() ?? ""}`,
+//       "Content-Type": undefined,
+//     },
+//   });
+//   const env = res.data as { isSuccess: boolean; data: string | null; message: string | null };
+//   if (!env.isSuccess) throw new Error(env.message ?? "Upload failed");
+//   return env.data as string;
+// },
+
+// async uploadDocument(id: string, file: File, fileType: DocumentFileType): Promise<void> {
+//   const form = new FormData();
+//   form.append("file", file);
+//   form.append("fileType", fileType);
+//   const res = await http.post(`/campaign/${id}/documents`, form, {
+//     headers: {
+//       Authorization: `Bearer ${getAccessToken() ?? ""}`,
+//       "Content-Type": undefined,
+//     },
+//   });
+//   const env = res.data as { isSuccess: boolean; message: string | null };
+//   if (!env.isSuccess) throw new Error(env.message ?? "Upload failed");
+// },
+
+//   postUpdate: (id: string, dto: { title: string; content: string; imageUrl?: string }) =>
+//     apiPost<unknown>(`/campaign/${id}/updates`, dto),
+//   listUpdates: (id: string) => apiGet<CampaignUpdate[]>(`/campaign/${id}/updates`),
+// };
+}

@@ -28,7 +28,7 @@ function CreatePage() {
     patientName: "",
     medicalCondition: "",
     story: "",
-    goalAmount: 500000,
+    goalAmount: "",
     surgeryDate: "",
     bankCode: "",
     accountNumber: "",
@@ -56,7 +56,7 @@ function CreatePage() {
         patientName: form.patientName,
         medicalCondition: form.medicalCondition,
         story: form.story,
-        goalAmount: Number(form.goalAmount),
+        goalAmount: Number(Number(form.goalAmount || 0).toFixed(2)),
         surgeryDate: form.surgeryDate || undefined,
         bankCode: form.bankCode,
         accountNumber: form.accountNumber,
@@ -103,13 +103,13 @@ function CreatePage() {
           </Field>
         </div>
 
-        <Field label="Story" hint="100–5,000 characters">
-          <textarea required minLength={100} maxLength={5000} rows={6} className={inputCls + " resize-y"} value={form.story} onChange={(e) => set("story", e.target.value)} />
+        <Field label="Story" hint="10–5,000 characters">
+          <textarea required minLength={10} maxLength={5000} rows={6} className={inputCls + " resize-y"} value={form.story} onChange={(e) => set("story", e.target.value)} />
         </Field>
 
         <div className="grid sm:grid-cols-2 gap-4">
           <Field label="Goal amount (₦)" hint="Min ₦1,000 · Max ₦100,000,000">
-            <input required type="number" min={1000} max={100000000} className={inputCls} value={form.goalAmount} onChange={(e) => set("goalAmount", Number(e.target.value) as never)} />
+  <input required type="number" min={1000} max={100000000} className={inputCls} value={form.goalAmount} onChange={(e) => set("goalAmount", e.target.value as never)} placeholder="e.g. 500000" />
           </Field>
           <Field label="Surgery date (optional)">
             <input type="date" className={inputCls} value={form.surgeryDate} onChange={(e) => set("surgeryDate", e.target.value)} />
