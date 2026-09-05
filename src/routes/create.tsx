@@ -39,6 +39,11 @@ function CreatePage() {
   const [busy, setBusy] = useState(false);
   const [bankOpen, setBankOpen] = useState(false);
 
+  // Track already-created campaign so retrying Submit after an upload
+  // timeout doesn't create a duplicate campaign in the database.
+  const [createdCampaignId, setCreatedCampaignId] = useState<string | null>(null);
+  const [createdCampaignSlug, setCreatedCampaignSlug] = useState<string | null>(null);
+
   const { data: banks = [], isLoading: banksLoading } = useQuery({
     queryKey: ["banks"],
     queryFn: () => campaignsApi.banks(),
@@ -46,30 +51,48 @@ function CreatePage() {
   });
   const selectedBank = useMemo(() => banks.find((b) => b.code === form.bankCode), [banks, form.bankCode]);
 
-  const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) => setForm((f) => ({ ...f, [k]: v }));
+  const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) =>
+    setForm((f) => ({ ...f, [k]: v }));
 
   const submit = useMutation({
     mutationFn: async () => {
       setBusy(true);
-      const created = await campaignsApi.create({
-        title: form.title,
-        patientName: form.patientName,
-        medicalCondition: form.medicalCondition,
-        story: form.story,
-        goalAmount: Number(Number(form.goalAmount || 0).toFixed(2)),
-        surgeryDate: form.surgeryDate || undefined,
-        bankCode: form.bankCode,
-        accountNumber: form.accountNumber,
-        accountName: form.accountName,
-      });
-      if (coverFile) await campaignsApi.uploadCoverImage(created.id, coverFile);
-      for (const d of docs) await campaignsApi.uploadDocument(created.id, d.file, d.type);
-      return created;
+
+      // If the campaign was already created in a previous attempt (upload
+      // timed out), skip creation and only retry the uploads.
+      let id = createdCampaignId;
+      let slug = createdCampaignSlug;
+
+      if (!id || !slug) {
+        const created = await campaignsApi.create({
+          title: form.title,
+          patientName: form.patientName,
+          medicalCondition: form.medicalCondition,
+          story: form.story,
+          goalAmount: Number(Number(form.goalAmount || 0).toFixed(2)),
+          surgeryDate: form.surgeryDate || undefined,
+          bankCode: form.bankCode,
+          accountNumber: form.accountNumber,
+          accountName: form.accountName,
+        });
+        id = created.id;
+        slug = created.slug;
+        setCreatedCampaignId(id);
+        setCreatedCampaignSlug(slug);
+      }
+
+      if (coverFile) await campaignsApi.uploadCoverImage(id, coverFile);
+      for (const d of docs) await campaignsApi.uploadDocument(id, d.file, d.type);
+
+      return { id, slug };
     },
-    onSuccess: (c) => {
+    onSuccess: ({ slug }) => {
+      // Clear stored IDs so the form is clean for a future campaign
+      setCreatedCampaignId(null);
+      setCreatedCampaignSlug(null);
       qc.invalidateQueries({ queryKey: ["campaigns"] });
       toast.success("Campaign created. It is now pending verification.");
-      navigate({ to: "/campaigns/$slug", params: { slug: c.slug } });
+      navigate({ to: "/campaigns/$slug", params: { slug } });
     },
     onError: (err: unknown) => {
       const m = err instanceof ApiError ? err.message : "Could not create campaign.";
@@ -77,6 +100,8 @@ function CreatePage() {
       if (err instanceof ApiError && err.fieldErrors?.length) {
         err.fieldErrors.forEach((e) => toast.error(e));
       }
+      // Intentionally do NOT clear createdCampaignId/Slug here —
+      // the next Submit attempt must retry only the upload, not re-create.
     },
     onSettled: () => setBusy(false),
   });
@@ -109,7 +134,7 @@ function CreatePage() {
 
         <div className="grid sm:grid-cols-2 gap-4">
           <Field label="Goal amount (₦)" hint="Min ₦1,000 · Max ₦100,000,000">
-  <input required type="number" min={1000} max={100000000} className={inputCls} value={form.goalAmount} onChange={(e) => set("goalAmount", e.target.value as never)} placeholder="e.g. 500000" />
+            <input required type="number" min={1000} max={100000000} className={inputCls} value={form.goalAmount} onChange={(e) => set("goalAmount", e.target.value as never)} placeholder="e.g. 500000" />
           </Field>
           <Field label="Surgery date (optional)">
             <input type="date" className={inputCls} value={form.surgeryDate} onChange={(e) => set("surgeryDate", e.target.value)} />
